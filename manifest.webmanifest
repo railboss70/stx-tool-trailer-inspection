@@ -1,0 +1,16 @@
+{
+  "name": "STX Tool Trailer Inspection",
+  "short_name": "Tool Trailer",
+  "start_url": "./",
+  "scope": "./",
+  "id": "stx-tool-trailer-inspection",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#28456F",
+  "theme_color": "#1f3864",
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1f3864">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Tool Trailer">
+  <meta name="format-detection" content="telephone=no">
+  <title>STX Tool Trailer Inspection</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icon-180.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- ===== App bar ===== -->
+  <header class="appbar">
+    <button type="button" class="icon-btn" id="nav-back" aria-label="Back" hidden>
+      <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M15.4 4.6 8 12l7.4 7.4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="appbar-title">
+      <div id="appbar-title">Tool Trailer Inspection</div>
+      <div id="appbar-sub" class="appbar-sub"></div>
+    </div>
+    <button type="button" class="icon-btn" id="nav-settings" aria-label="Settings">
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M19.4 13a7.8 7.8 0 0 0 0-2l2.1-1.6a.5.5 0 0 0 .1-.6l-2-3.5a.5.5 0 0 0-.6-.2l-2.5 1a7.4 7.4 0 0 0-1.7-1l-.4-2.6a.5.5 0 0 0-.5-.4h-4a.5.5 0 0 0-.5.4l-.4 2.6c-.6.3-1.2.6-1.7 1l-2.5-1a.5.5 0 0 0-.6.2l-2 3.5a.5.5 0 0 0 .1.6L4.6 11a7.8 7.8 0 0 0 0 2l-2.1 1.6a.5.5 0 0 0-.1.6l2 3.5c.1.2.4.3.6.2l2.5-1c.5.4 1.1.7 1.7 1l.4 2.6c0 .2.2.4.5.4h4c.3 0 .5-.2.5-.4l.4-2.6c.6-.3 1.2-.6 1.7-1l2.5 1c.2.1.5 0 .6-.2l2-3.5a.5.5 0 0 0-.1-.6L19.4 13ZM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7Z"/></svg>
+    </button>
+  </header>
+  <div class="stepbar" id="stepbar" hidden><span id="stepbar-fill"></span></div>
+
+  <main id="screens">
+    <!-- ===== Home ===== -->
+    <section class="screen" data-screen="home">
+      <div class="home-hero">
+        <img src="assets/stx-logo.jpg" alt="STX Corporation" class="home-logo">
+        <h1>Weekly Tool Trailer Inspection</h1>
+        <p>Inventory, trailer photos and sign-off in one PDF.</p>
+      </div>
+      <div class="card draft-card" id="draft-card" hidden>
+        <div class="draft-label">Inspection in progress</div>
+        <div class="draft-title" id="draft-title"></div>
+        <div class="draft-sub" id="draft-sub"></div>
+        <button type="button" class="btn btn-primary btn-big" id="btn-continue">Continue inspection</button>
+        <button type="button" class="btn btn-ghost btn-full" id="btn-discard">Discard and start over</button>
+      </div>
+      <button type="button" class="btn btn-primary btn-big" id="btn-start">Start new inspection</button>
+      <label class="btn btn-secondary btn-big btn-import">
+        <input type="file" accept="application/pdf,.pdf" class="import-pdf" hidden>
+        Load last inspection PDF
+      </label>
+      <p class="hint center">Load last week's PDF (from anyone's phone) so repeat items and order status carry over.</p>
+      <div id="home-msg" class="lastweek" hidden></div>
+    </section>
+
+    <!-- ===== Step 1: Trailer & Inspector ===== -->
+    <section class="screen" data-screen="info">
+      <div class="screen-errors" hidden></div>
+      <section class="card">
+        <div class="field-stack">
+          <label>Tool Trailer #
+            <input id="trailerId" type="text" autocomplete="off" autocapitalize="characters" maxlength="20" placeholder="e.g. TT-14" enterkeyhint="next">
+          </label>
+          <label>Date of Inspection
+            <input id="date" type="date">
+          </label>
+          <label>Job / Location
+            <input id="job" type="text" maxlength="80" placeholder="e.g. UP Sub MP 112 – Siding" enterkeyhint="next">
+          </label>
+          <label>Inspector Name
+            <input id="inspector" type="text" autocomplete="name" autocapitalize="words" maxlength="40" placeholder="First and last name" enterkeyhint="done">
+          </label>
+        </div>
+      </section>
+      <section class="card">
+        <h2>Last inspection</h2>
+        <div class="lastweek" id="lastweek" hidden></div>
+        <label class="btn btn-secondary btn-full btn-import">
+          <input type="file" accept="application/pdf,.pdf" class="import-pdf" hidden>
+          Load last inspection PDF
+        </label>
+        <p class="hint center">Got last week's PDF from someone else? Load it so repeat items carry over.</p>
+      </section>
+    </section>
+
+    <!-- ===== Step 2: Inventory ===== -->
+    <section class="screen" data-screen="inventory">
+      <div class="inv-progress" id="progress" aria-live="polite">
+        <div class="progress-bar"><span id="progress-fill"></span></div>
+        <div class="progress-text" id="progress-text">0 of 62 checked</div>
+      </div>
+      <div class="screen-errors" hidden></div>
+      <section class="card key">
+        <span class="chip good">GOOD</span> Present / Operational
+        <span class="chip repair">REPAIR</span> Needs Repair
+        <span class="chip need">NEED</span> Not on trailer / replace
+      </section>
+      <div id="inventory"></div>
+    </section>
+
+    <!-- ===== Step 3: Other requests ===== -->
+    <section class="screen" data-screen="requests">
+      <section class="card">
+        <h2>Other Tool / Consumable Requests <span class="opt">optional</span></h2>
+        <p class="hint">Anything else the crew needs that isn't on the list.</p>
+        <textarea id="requests" rows="6" maxlength="1000" placeholder="Type here, or leave blank"></textarea>
+      </section>
+    </section>
+
+    <!-- ===== Step 4: Photos ===== -->
+    <section class="screen" data-screen="photos">
+      <div class="screen-errors" hidden></div>
+      <section class="card" id="sec-photos">
+        <h2>Trailer Photos <span class="req">2 required</span></h2>
+        <p class="hint">Take two photos of the <b>inside of the trailer</b> so managers can see how clean and organized it is — for example one from the doors and one from the back.</p>
+        <div class="photos">
+          <div class="photo-slot" data-slot="0">
+            <label class="photo-preview" id="photo-preview-0">
+              <input type="file" accept="image/*" capture="environment" class="photo-input" data-slot="0" hidden>
+              <span>📷<br>Photo 1</span>
+            </label>
+            <div class="photo-cap" id="photo-cap-0">Tap to take</div>
+          </div>
+          <div class="photo-slot" data-slot="1">
+            <label class="photo-preview" id="photo-preview-1">
+              <input type="file" accept="image/*" capture="environment" class="photo-input" data-slot="1" hidden>
+              <span>📷<br>Photo 2</span>
+            </label>
+            <div class="photo-cap" id="photo-cap-1">Tap to take</div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- ===== Step 5: Review & sign ===== -->
+    <section class="screen" data-screen="sign">
+      <div class="screen-errors" hidden></div>
+      <section class="card">
+        <h2>Review</h2>
+        <div id="review"></div>
+      </section>
+      <section class="card" id="sec-sign">
+        <h2>Inspector Signature <span class="req">required</span></h2>
+        <p class="hint">By signing, I confirm I inspected this trailer and the information is accurate.</p>
+        <div class="sig-wrap">
+          <canvas id="sig" aria-label="Signature pad"></canvas>
+          <div class="sig-line"><span>X</span></div>
+        </div>
+        <div class="sig-actions">
+          <span id="sig-name" class="sig-name"></span>
+          <button type="button" class="btn btn-ghost" id="sig-clear">Clear</button>
+        </div>
+      </section>
+    </section>
+
+    <!-- ===== Done ===== -->
+    <section class="screen" data-screen="done">
+      <div class="done-body">
+        <div class="done-check">✓</div>
+        <h2>Inspection PDF ready</h2>
+        <p class="done-file" id="done-file"></p>
+        <p id="done-summary" class="done-summary"></p>
+        <button type="button" class="btn btn-primary btn-big" id="btn-share">Share / Send PDF</button>
+        <button type="button" class="btn btn-secondary btn-big" id="btn-download">Save PDF to phone</button>
+        <button type="button" class="btn btn-ghost btn-full" id="btn-edit">Edit inspection</button>
+        <button type="button" class="btn btn-ghost btn-full" id="btn-new">Done – back to home</button>
+      </div>
+    </section>
+
+    <!-- ===== Settings ===== -->
+    <section class="screen" data-screen="settings">
+      <section class="card">
+        <h2>My name</h2>
+        <p class="hint">Fills in the inspector name on new inspections.</p>
+        <input id="set-name" type="text" autocomplete="name" autocapitalize="words" maxlength="40" placeholder="First and last name">
+      </section>
+      <section class="card">
+        <h2>Last inspections on this phone</h2>
+        <div id="set-history"></div>
+        <label class="btn btn-secondary btn-full btn-import">
+          <input type="file" accept="application/pdf,.pdf" class="import-pdf" hidden>
+          Load last inspection PDF
+        </label>
+        <div id="settings-msg" class="lastweek" hidden></div>
+      </section>
+      <section class="card">
+        <h2>Current inspection</h2>
+        <button type="button" class="btn btn-danger btn-full" id="btn-clear-draft">Discard current inspection</button>
+      </section>
+      <section class="card about">
+        <h2>About</h2>
+        <p>STX Tool Trailer Inspection <span id="app-version"></span></p>
+        <p>Works without signal once opened. Add it to your home screen: <b>iPhone</b> – Share → Add to Home Screen. <b>Android</b> – ⋮ menu → Add to Home screen.</p>
+        <p>Inspections stay on this phone until you share the PDF.</p>
+      </section>
+    </section>
+  </main>
+
+  <!-- ===== Bottom action bar ===== -->
+  <footer class="bottombar" id="bottombar" hidden>
+    <button type="button" class="btn btn-primary btn-big" id="btn-next">Next</button>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="vendor/jspdf.umd.min.js"></script>
+  <script src="assets/logo.js"></script>
+  <script src="js/items.js"></script>
+  <script src="js/signature.js"></script>
+  <script src="js/pdf.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
